@@ -93,6 +93,18 @@ namespace Octokit
         /// https://help.github.com/articles/searching-repositories#stars
         /// </summary>
         public Range Stars { get; set; }
+        
+        /// <summary>
+        /// Searches repositories based on the specified topic.
+        /// https://help.github.com/en/articles/searching-for-repositories#search-by-topic
+        /// </summary>
+        public string Topic { get; set; }
+
+        /// <summary>
+        /// Searches repositories based on the number of topics.
+        /// https://help.github.com/en/articles/searching-for-repositories#search-by-number-of-topics
+        /// </summary>
+        public Range Topics { get; set; }
 
         /// <summary>
         /// Limits searches to a specific user or repository.
@@ -116,7 +128,7 @@ namespace Octokit
         /// Filters whether archived repositories should be included (true) or not (false).
         /// </summary>
         public bool? Archived { get; set; }
-
+        
         public override IReadOnlyList<string> MergedQualifiers()
         {
             var parameters = new List<string>();
@@ -144,6 +156,16 @@ namespace Octokit
             if (Stars != null)
             {
                 parameters.Add(string.Format(CultureInfo.InvariantCulture, "stars:{0}", Stars));
+            }
+
+            if (Topic.IsNotBlank())
+            {
+                parameters.Add(string.Format(CultureInfo.InvariantCulture, "topic:{0}", Topic));
+            }
+
+            if (Topics != null)
+            {
+                parameters.Add(string.Format(CultureInfo.InvariantCulture, "topics:{0}", Topics));
             }
 
             if (Language != null)

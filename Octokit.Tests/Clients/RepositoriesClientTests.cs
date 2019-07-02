@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using NSubstitute;
@@ -903,6 +904,53 @@ namespace Octokit.Tests.Clients
 
                 await Assert.ThrowsAsync<ArgumentException>(() => client.GetAllTopics("", "repo"));
                 await Assert.ThrowsAsync<ArgumentException>(() => client.GetAllTopics("owner", ""));
+            }
+        }
+
+        public class TheReplaceAllTopicsMethod
+        {
+            [Fact]
+            public void RequestsTheCorrectUrl()
+            {
+                var connection = Substitute.For<IApiConnection>();
+                var client = new RepositoriesClient(connection);
+
+                client.ReplaceAllTopics("owner", "name", new RepositoryTopics(new List<string> { "Test" }));
+
+                connection.Received()
+                    .Put<RepositoryTopics>(
+                        Arg.Is<Uri>(u => u.ToString() == "repos/owner/name/topics"),
+                        Arg.Is<RepositoryTopics>(u => u.Names.Count == 1 && u.Names.First() == "Test"),
+                        null,
+                        "application/vnd.github.mercy-preview+json");
+            }
+
+            [Fact]
+            public void RequestsTheCorrectUrlWithRepositoryId()
+            {
+                var connection = Substitute.For<IApiConnection>();
+                var client = new RepositoriesClient(connection);
+
+                client.ReplaceAllTopics(1, new RepositoryTopics(new List<string> { "Test" }));
+
+                connection.Received()
+                    .Put<RepositoryTopics>(
+                        Arg.Is<Uri>(u => u.ToString() == "repositories/1/topics"),
+                        Arg.Is<RepositoryTopics>(u => u.Names.Count == 1 && u.Names.First() == "Test"),
+                        null,
+                        "application/vnd.github.mercy-preview+json");
+            }
+
+            [Fact]
+            public async Task EnsuresNonNullArguments()
+            {
+                var client = new RepositoriesClient(Substitute.For<IApiConnection>());
+
+                await Assert.ThrowsAsync<ArgumentNullException>(() => client.ReplaceAllTopics(null, "repo", new RepositoryTopics()));
+                await Assert.ThrowsAsync<ArgumentNullException>(() => client.ReplaceAllTopics("owner", null, new RepositoryTopics()));
+
+                await Assert.ThrowsAsync<ArgumentException>(() => client.ReplaceAllTopics("", "repo", new RepositoryTopics()));
+                await Assert.ThrowsAsync<ArgumentException>(() => client.ReplaceAllTopics("owner", "", new RepositoryTopics()));
             }
         }
 

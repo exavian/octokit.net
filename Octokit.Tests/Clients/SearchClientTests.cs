@@ -415,6 +415,96 @@ namespace Octokit.Tests.Clients
             }
 
             [Fact]
+            public void TestingTheTopicQualifier()
+            {
+                var connection = Substitute.For<IApiConnection>();
+                var client = new SearchClient(connection);
+                //get repos which have the 'test' topic
+                var request = new SearchRepositoriesRequest("github");
+                request.Topic = "test";
+                client.SearchRepo(request);
+                connection.Received().Get<SearchRepositoryResult>(Arg.Is<Uri>(u => u.ToString() == "search/repositories"),
+                    Arg.Is<Dictionary<string, string>>(d => d["q"] == "github+topic:test"));
+            }
+
+            [Fact]
+            public void TestingTheTopicsQualifier_Equals()
+            {
+                var connection = Substitute.For<IApiConnection>();
+                var client = new SearchClient(connection);
+                //get repos which have 5 topics
+                var request = new SearchRepositoriesRequest("github");
+                request.Topics = new Range(5);
+                client.SearchRepo(request);
+                connection.Received().Get<SearchRepositoryResult>(Arg.Is<Uri>(u => u.ToString() == "search/repositories"),
+                    Arg.Is<Dictionary<string, string>>(d => d["q"] == "github+topics:5"));
+            }
+
+            [Fact]
+            public void TestingTheTopicsQualifier_LessThan()
+            {
+                var connection = Substitute.For<IApiConnection>();
+                var client = new SearchClient(connection);
+                //get repos which have less then 5 topics.
+                var request = new SearchRepositoriesRequest("github");
+                request.Topics = Range.LessThan(5);
+                client.SearchRepo(request);
+                connection.Received().Get<SearchRepositoryResult>(Arg.Is<Uri>(u => u.ToString() == "search/repositories"),
+                    Arg.Is<Dictionary<string, string>>(d => d["q"] == "github+topics:<5"));
+            }
+
+            public void TestingTheTopicsQualifier_LessThanOrEquals()
+            {
+                var connection = Substitute.For<IApiConnection>();
+                var client = new SearchClient(connection);
+                //get repos which have 5 topics
+                var request = new SearchRepositoriesRequest("github");
+                request.Topics = Range.LessThanOrEquals(5);
+                client.SearchRepo(request);
+                connection.Received().Get<SearchRepositoryResult>(Arg.Is<Uri>(u => u.ToString() == "search/repositories"),
+                    Arg.Is<Dictionary<string, string>>(d => d["q"] == "github+topics:<=5"));
+            }
+
+            [Fact]
+            public void TestingTheTopicsQualifier_GreaterThan()
+            {
+                var connection = Substitute.For<IApiConnection>();
+                var client = new SearchClient(connection);
+                //get repos which have less then 5 topics.
+                var request = new SearchRepositoriesRequest("github");
+                request.Topics = Range.GreaterThan(5);
+                client.SearchRepo(request);
+                connection.Received().Get<SearchRepositoryResult>(Arg.Is<Uri>(u => u.ToString() == "search/repositories"),
+                    Arg.Is<Dictionary<string, string>>(d => d["q"] == "github+topics:>5"));
+            }
+
+            [Fact]
+            public void TestingTheTopicsQualifier_GreaterThanOrEquals()
+            {
+                var connection = Substitute.For<IApiConnection>();
+                var client = new SearchClient(connection);
+                //get repos which have less then 5 topics.
+                var request = new SearchRepositoriesRequest("github");
+                request.Topics = Range.GreaterThanOrEquals(5);
+                client.SearchRepo(request);
+                connection.Received().Get<SearchRepositoryResult>(Arg.Is<Uri>(u => u.ToString() == "search/repositories"),
+                    Arg.Is<Dictionary<string, string>>(d => d["q"] == "github+topics:>=5"));
+            }
+
+            [Fact]
+            public void TestingTheTopicsQualifier_Range()
+            {
+                var connection = Substitute.For<IApiConnection>();
+                var client = new SearchClient(connection);
+                //get repos which have mroe than 1 but less then 5 topics.
+                var request = new SearchRepositoriesRequest("github");
+                request.Topics = new Range(1, 5);
+                client.SearchRepo(request);
+                connection.Received().Get<SearchRepositoryResult>(Arg.Is<Uri>(u => u.ToString() == "search/repositories"),
+                    Arg.Is<Dictionary<string, string>>(d => d["q"] == "github+topics:1..5"));
+            }
+
+            [Fact]
             public void TestingTheForksQualifier()
             {
                 var connection = Substitute.For<IApiConnection>();
@@ -454,7 +544,7 @@ namespace Octokit.Tests.Clients
             }
 
             [Fact]
-            public void TestingTheLangaugeQualifier()
+            public void TestingTheLanguageQualifier()
             {
                 var connection = Substitute.For<IApiConnection>();
                 var client = new SearchClient(connection);
@@ -556,8 +646,7 @@ namespace Octokit.Tests.Clients
                 connection.Received().Get<SearchRepositoryResult>(Arg.Is<Uri>(u => u.ToString() == "search/repositories"),
                     Arg.Is<Dictionary<string, string>>(d => d["q"] == "github+created:<2011-01-01"));
             }
-
-
+            
             [Fact]
             public void TestingTheCreatedQualifier_LessThanOrEquals()
             {
@@ -676,6 +765,7 @@ namespace Octokit.Tests.Clients
                         d["q"] == "github" &&
                         d["sort"] == "stars"));
             }
+
             [Fact]
             public void TestingTheSearchParameter()
             {

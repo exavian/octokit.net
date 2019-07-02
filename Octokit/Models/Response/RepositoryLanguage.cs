@@ -25,7 +25,7 @@ namespace Octokit
             get
             {
                 return string.Format(CultureInfo.InvariantCulture,
-                    "RepositoryLangauge: Name: {0} Bytes: {1}", Name, NumberOfBytes);
+                    "RepositoryLanguage: Name: {0} Bytes: {1}", Name, NumberOfBytes);
             }
         }
     }
