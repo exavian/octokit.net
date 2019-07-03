@@ -453,6 +453,7 @@ namespace Octokit.Tests.Clients
                     Arg.Is<Dictionary<string, string>>(d => d["q"] == "github+topics:<5"));
             }
 
+            [Fact]
             public void TestingTheTopicsQualifier_LessThanOrEquals()
             {
                 var connection = Substitute.For<IApiConnection>();
